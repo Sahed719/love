@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Envelope + Letter (Open/Close ×)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #2c5f2d;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+
+        .envelope-wrapper {
+            position: relative;
+            width: 400px;
+            height: 280px;
+        }
+
+        .envelope {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .envelope-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #d4a574 0%, #c19a6b 100%);
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .envelope-flap {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #faddbe 0%, #fddcb9 100%);
+            clip-path: polygon(0 0, 100% 0, 50% 65%);
+            transform-origin: top;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 3;
+        }
+
+        .envelope.open .envelope-flap {
+            transform: rotateX(-180deg);
+        }
+
+        .envelope-front {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #f0c999 0%, #ecbf8c 100%);
+            border-radius: 10px;
+            z-index: 2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .heart {
+            position: relative;
+            width: 70px;
+            height: 70px;
+            animation: heartbeat 1.5s ease-in-out infinite;
+            z-index: 4;
+        }
+        
+
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .heart:before,
+        .heart:after {
+            position: absolute;
+            content: "";
+            left: 35px;
+            top: 0;
+            width: 35px;
+            height: 55px;
+            background: linear-gradient(135deg, #ff6b9d, #ff8e9e);
+            border-radius: 35px 35px 0 0;
+            transform: rotate(-45deg);
+            transform-origin: 0 100%;
+            box-shadow: 0 5px 15px rgba(255, 107, 157, 0.4);
+        }
+
+        .heart:after {
+            left: 0;
+            transform: rotate(45deg);
+            transform-origin: 100% 100%;
+        }
+
+        .letter {
+            position: absolute;
+            width: 85%;
+            height: 80%;
+            background: linear-gradient(to bottom, #fff9f0, #fff5e6);
+            top: 10%;
+            left: 7.5%;
+            padding: 25px;
+            border-radius: 5px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: translateY(30px) scale(0.95);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1;
+            overflow-y: auto;
+        }
+
+        .envelope.open .letter {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            z-index: 5;
+        }
+
+        .letter-content {
+            text-align: center;
+            color: #5a4a42;
+        }
+
+        .letter h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #d63384;
+            font-family: 'Georgia', serif;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .letter p {
+            font-size: 16px;
+            line-height: 1.8;
+            margin-bottom: 12px;
+            font-style: italic;
+        }
+
+        .letter .signature {
+            margin-top: 25px;
+            font-size: 18px;
+            font-family: 'Brush Script MT', cursive;
+            color: #d63384;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #ff6b9d, #ff8e9e);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 3px 10px rgba(255, 107, 157, 0.4);
+            transition: all 0.3s ease;
+            z-index: 6;
+        }
+
+        .close-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(255, 107, 157, 0.6);
+        }
+
+        .envelope.open .close-btn {
+            display: flex;
+        }
+
+        .hint {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 18px;
+            text-align: center;
+            animation: fadeInOut 3s ease-in-out infinite;
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        .sparkle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: white;
+            border-radius: 50%;
+            animation: sparkle 2s linear infinite;
+        }
+
+        @keyframes sparkle {
+            0% {
+                opacity: 0;
+                transform: translateY(0) scale(0);
+            }
+            50% {
+                opacity: 1;
+                transform: translateY(-20px) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-40px) scale(0);
+            }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 480px) {
+            .envelope-wrapper {
+                width: 320px;
+                height: 224px;
+            }
+            
+            .letter {
+                padding: 20px;
+            }
+            
+            .letter h2 {
+                font-size: 20px;
+            }
+            
+            .letter p {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="envelope-wrapper">
+        <div class="envelope" id="envelope">
+            <div class="envelope-back"></div>
+            <div class="envelope-flap"></div>
+            <div class="envelope-front">
+                <div class="heart"></div>
+            </div>
+            <div class="letter">
+                <div class="letter-content">
+                    <h2>My Dearest Love 💕</h2>
+                    <p>Your smile brightens my entire world.</p>
+                    <p>In your eyes, I see my future unfold.</p>
+                    <p>Every moment with you feels like a beautiful dream.</p>
+                    <p>You are the reason my heart beats, the rhythm of my soul.</p>
+                    <p>Without you, this heart wouldn't beat, this life wouldn't go on.</p>
+                    <p>I want you in every moment, I love you in every breath.</p>
+                    <p class="signature">Forever yours 💝</p>
+                </div>
+            </div>
+            <button class="close-btn" id="closeBtn">×</button>
+        </div>
+        <div class="hea"></div>
+    </div>
+    
+    <div class="hint" id="hint">💝 Click on the envelope to read the letter</div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const envelope = document.getElementById('envelope');
+            const closeBtn = document.getElementById('closeBtn');
+            const hint = document.getElementById('hint');
+            
+            // Create sparkles around the heart
+            function createSparkle() {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                sparkle.style.left = Math.random() * 100 + '%';
+                sparkle.style.top = Math.random() * 100 + '%';
+                sparkle.style.animationDelay = Math.random() * 2 + 's';
+                envelope.appendChild(sparkle);
+                
+                setTimeout(() => {
+                    sparkle.remove();
+                }, 2000);
+            }
+            
+            // Create sparkles periodically
+            setInterval(createSparkle, 500);
+            
+            // Open envelope
+            envelope.addEventListener('click', function(e) {
+                if (!envelope.classList.contains('open') && e.target !== closeBtn) {
+                    envelope.classList.add('open');
+                    hint.textContent = 'Click × to close';
+                }
+            });
+            
+            // Close envelope
+            closeBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                envelope.classList.remove('open');
+                hint.textContent = '💝 Click on the envelope to read the letter';
+            });
+            
+            // Add keyboard support
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && envelope.classList.contains('open')) {
+                    envelope.classList.remove('open');
+                    hint.textContent = '💝 Click on the envelope to read the letter';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
